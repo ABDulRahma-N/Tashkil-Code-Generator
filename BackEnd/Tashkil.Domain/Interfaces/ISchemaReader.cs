@@ -11,5 +11,7 @@ namespace Tashkil.Domain.Interfaces
     {
         Task<List<Databases>> GetDatabasesAsync();
         Task<List<Tables>> GetTablesAsync(string databaseName);
+        Task<List<Columns>> GetColumnsAsync(string databaseName, string tableName);
+
     }
 }

@@ -1,5 +1,8 @@
-﻿using System;
+﻿using Dapper;
+using Microsoft.Data.SqlClient;
+using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -16,14 +19,38 @@ namespace Tashkil.Infrastructure.Repositories
         {
             _connectionString = connectionString;
         }
-        public Task<List<Databases>> GetDatabasesAsync()
+
+        public async Task<List<Columns>> GetColumnsAsync(string databaseName, string tableName)
         {
-            throw new NotImplementedException();
+           using IDbConnection connection = new SqlConnection(_connectionString);
+
+            var parameters =  new {
+                databaseName = databaseName,
+                tableName = tableName
+            };
+
+            string query = $@"SELECT COLUMN_NAME AS [columnName], DATA_TYPE AS [dataType], IS_NULLABLE AS [isNullable] 
+                              FROM @databaseName.INFORMATION_SCHEMA.COLUMNS 
+                              WHERE TABLE_NAME = @tableName";
+            var result = await connection.QueryAsync<Columns>(query, parameters);
+            return result.ToList();
         }
 
-        public Task<List<Tables>> GetTablesAsync(string databaseName)
+        public async Task<List<Databases>> GetDatabasesAsync()
         {
-            throw new NotImplementedException();
+           using IDbConnection connection = new SqlConnection(_connectionString);
+            string query = @"SELECT name AS [databaseName] FROM sys.databases WHERE database_id > 4";
+            var result = await connection.QueryAsync<Databases>(query);
+            return result.ToList();
         }
+
+        public async Task<List<Tables>> GetTablesAsync(string databaseName)
+        {
+            using IDbConnection connection = new SqlConnection(_connectionString);
+            string query = $@"SELECT TABLE_NAME AS [tableName] FROM {databaseName}.INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE'";
+            var result = await connection.QueryAsync<Tables>(query);
+            return result.ToList();
+        }
+
     }
 }
