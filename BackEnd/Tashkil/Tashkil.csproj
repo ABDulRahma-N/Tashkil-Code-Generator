@@ -12,6 +12,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Tashkil.Application\Tashkil.Application.csproj" />
+    <ProjectReference Include="..\Tashkil.Infrastructure\Tashkil.Infrastructure.csproj" />
   </ItemGroup>
 
 </Project>

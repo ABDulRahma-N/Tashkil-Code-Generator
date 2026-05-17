@@ -1,6 +1,16 @@
+using Tashkil.Application.Interfaces;
+using Tashkil.Application.Services;
+using Tashkil.Domain.Interfaces;
+using Tashkil.Infrastructure.Repositories;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+
+builder.Services.AddScoped<ISchemaReader>(provider => new SchemaReader(connectionString));
+builder.Services.AddScoped<ISchemaService, SchemaService>();
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
