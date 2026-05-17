@@ -11,5 +11,6 @@ namespace Tashkil.Application.Interfaces
     public interface ICodeGeneratorService
     {
         Task <string> GenerateEntityAsync(string TableName, List<ColumnsDto> columns);
+        string GenerateRepositoryInterfaceAsync(string tablename);
     }
 }

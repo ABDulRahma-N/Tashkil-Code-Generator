@@ -34,5 +34,21 @@ $@"public class {Tablename}
             string finalEntity = EntityBody.Replace("// Properties will be inserted here", propertiesBuilder.ToString());
             return Task.FromResult(finalEntity);
         }
+
+        public string GenerateRepositoryInterfaceAsync(string tablename)
+        {
+            string Tablename = NameHelper.Singularize(tablename);
+            string body = 
+@$"public interface I{Tablename}Repository
+{{ 
+    Task<{Tablename}> GetByIdAsync(int Id);
+    Task<List<{Tablename}>> GetAllAsync();
+    Task<int> CreateAsync({Tablename}  {Tablename.ToLower()});
+    Task<bool> UpdateAsync({Tablename} {Tablename.ToLower()});
+    Task<bool> DeleteAsync(int Id);
+}}";
+            return body;
+
+        }
     }
 }
