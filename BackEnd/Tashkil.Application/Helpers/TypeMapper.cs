@@ -62,7 +62,7 @@ namespace Tashkil.Application.Helpers
                 csharpType = "object";
 
         
-            if (isNullable && csharpType != "string" && csharpType != "byte[]")
+            if (isNullable && csharpType != "byte[]")
                 return $"{csharpType}?";
 
             return csharpType;

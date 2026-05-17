@@ -16,9 +16,14 @@ namespace Tashkil.Application.Helpers
         }
         public static string ToPascalCase(string columnName)
         {
+            var withUnderscores = string.Concat(
+                columnName.Select((c, i) => i > 0 && char.IsUpper(c) ? "_" + c : c.ToString())
+            );
+
             return string.Concat(
-                columnName.Split('_')
-                          .Select(w => char.ToUpper(w[0]) + w.Substring(1).ToLower())
+                withUnderscores.Split('_')
+                               .Where(w => !string.IsNullOrEmpty(w))
+                               .Select(w => char.ToUpper(w[0]) + w.Substring(1).ToLower())
             );
         }
     }
