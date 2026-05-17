@@ -47,7 +47,24 @@ namespace Tashkil.Controllers
             {
                 return StatusCode(StatusCodes.Status500InternalServerError, "An error occurred while processing your request.");
             }
-
+        }
+        [HttpGet("{databaseName}/tables/{tableName}/columns")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> GetColumns(string databaseName, string tableName)
+        {
+            if (string.IsNullOrWhiteSpace(databaseName) || string.IsNullOrWhiteSpace(tableName))
+                return BadRequest("Database name and table name are required.");
+            try
+            {
+                var columns = await schemaService.GetColumnsAsync(databaseName, tableName);
+                return Ok(columns);
+            }
+            catch (Exception)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, "An error occurred while processing your request.");
+            }
         }
     }
 }

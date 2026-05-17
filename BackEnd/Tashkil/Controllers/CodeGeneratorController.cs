@@ -15,20 +15,19 @@ namespace Tashkil.Controllers
         {
             _codeGeneratorService = codeGeneratorService;
         }
-        [HttpGet]
-        [Route("GenerateEntity")]
+        [HttpPost("GenerateEntity")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> GenerateEntity(string TableName, List<ColumnsDto> columns)
+        public async Task<IActionResult> GenerateEntity([FromBody] CreateEntityDto createEntity)
         {
-            if (string.IsNullOrEmpty(TableName) || columns == null || !columns.Any())
+            if (string.IsNullOrEmpty(createEntity.TableName) || createEntity.Columns == null || !createEntity.Columns.Any())
             {
                 return BadRequest("TableName and columns are required.");
             }
             try
             {
-                var result = await _codeGeneratorService.GenerateEntityAsync(TableName, columns);
+                var result = await _codeGeneratorService.GenerateEntityAsync(createEntity.TableName, createEntity.Columns);
                 return Ok(result);
             }
             catch (Exception)

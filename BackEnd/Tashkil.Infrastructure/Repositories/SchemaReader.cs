@@ -30,11 +30,12 @@ namespace Tashkil.Infrastructure.Repositories
 
             var safeDatabaseName = $"[{databaseName.Replace("]", "")}]";
 
-            string query = $@"SELECT COLUMN_NAME AS [columnName], 
-                         DATA_TYPE AS [dataType], 
-                         IS_NULLABLE AS [isNullable] 
-                  FROM {safeDatabaseName}.INFORMATION_SCHEMA.COLUMNS 
-                  WHERE TABLE_NAME = @tableName";
+            string query = $@"SELECT 
+    COLUMN_NAME AS [columnName], 
+    DATA_TYPE AS [dataType], 
+    CASE WHEN IS_NULLABLE = 'YES' THEN 1 ELSE 0 END AS [isNullable] 
+FROM {safeDatabaseName}.INFORMATION_SCHEMA.COLUMNS 
+WHERE TABLE_NAME = @tableName";
 
             var result = await connection.QueryAsync<Columns>(query, new { tableName });
             return result.ToList();
