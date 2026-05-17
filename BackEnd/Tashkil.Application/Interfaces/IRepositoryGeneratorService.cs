@@ -4,14 +4,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Tashkil.Application.DTOs;
-using Tashkil.Domain.Entities;
 
 namespace Tashkil.Application.Interfaces
 {
-    public interface ICodeGeneratorService:
-        IEntityGeneratorService,
-        IRepositoryGeneratorService
+    public interface IRepositoryGeneratorService
     {
-       
+        string GenerateRepositoryInterface(string tablename);
+        string GenerateRepositoryImplementation(string tablename, List<ColumnsDto> columns);
     }
 }

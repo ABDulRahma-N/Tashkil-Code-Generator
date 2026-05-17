@@ -13,29 +13,25 @@ namespace Tashkil.Application.Services
     public class CodeGeneratorService : ICodeGeneratorService
     {
         private readonly IEntityGeneratorService _entityGeneratorService;
-        public CodeGeneratorService(IEntityGeneratorService entityGeneratorService)
+        private readonly IRepositoryGeneratorService _repositoryGeneratorService;
+        public CodeGeneratorService(IEntityGeneratorService entityGeneratorService, IRepositoryGeneratorService repositoryGeneratorService)
         {
             _entityGeneratorService = entityGeneratorService;
+            _repositoryGeneratorService = repositoryGeneratorService;
         }
         public string GenerateEntityAsync(string TableName, List<ColumnsDto> columns)
         {
             return _entityGeneratorService.GenerateEntityAsync(TableName, columns);
         }
 
-        public string GenerateRepositoryInterfaceAsync(string tablename)
+        public string GenerateRepositoryImplementation(string tablename, List<ColumnsDto> columns)
         {
-            string Tablename = NameHelper.Singularize(tablename);
-            string body = 
-                @$"public interface I{Tablename}Repository
-                {{ 
-                    Task<{Tablename}> GetByIdAsync(int Id);
-                    Task<List<{Tablename}>> GetAllAsync();
-                    Task<int> CreateAsync({Tablename} {Tablename.ToLower()});
-                    Task<bool> UpdateAsync({Tablename} {Tablename.ToLower()});
-                    Task<bool> DeleteAsync(int Id);
-                }}";
-            return body;
+           return _repositoryGeneratorService.GenerateRepositoryImplementation(tablename, columns);
+        }
 
+        public string GenerateRepositoryInterface(string tablename)
+        {
+           return _repositoryGeneratorService.GenerateRepositoryInterface(tablename);
         }
     }
 }
