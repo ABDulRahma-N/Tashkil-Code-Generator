@@ -22,17 +22,21 @@ namespace Tashkil.Infrastructure.Repositories
 
         public async Task<List<Columns>> GetColumnsAsync(string databaseName, string tableName)
         {
-           using IDbConnection connection = new SqlConnection(_connectionString);
+            using IDbConnection connection = new SqlConnection(_connectionString);
 
-            var parameters =  new {
-                databaseName = databaseName,
-                tableName = tableName
-            };
+            var databases = await GetDatabasesAsync();
+            if (!databases.Any(d => d.DatabaseName == databaseName))
+                throw new Exception("Invalid database name");
 
-            string query = $@"SELECT COLUMN_NAME AS [columnName], DATA_TYPE AS [dataType], IS_NULLABLE AS [isNullable] 
-                              FROM @databaseName.INFORMATION_SCHEMA.COLUMNS 
-                              WHERE TABLE_NAME = @tableName";
-            var result = await connection.QueryAsync<Columns>(query, parameters);
+            var safeDatabaseName = $"[{databaseName.Replace("]", "")}]";
+
+            string query = $@"SELECT COLUMN_NAME AS [columnName], 
+                         DATA_TYPE AS [dataType], 
+                         IS_NULLABLE AS [isNullable] 
+                  FROM {safeDatabaseName}.INFORMATION_SCHEMA.COLUMNS 
+                  WHERE TABLE_NAME = @tableName";
+
+            var result = await connection.QueryAsync<Columns>(query, new { tableName });
             return result.ToList();
         }
 
