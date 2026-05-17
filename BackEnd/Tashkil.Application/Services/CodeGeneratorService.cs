@@ -12,27 +12,14 @@ namespace Tashkil.Application.Services
 {
     public class CodeGeneratorService : ICodeGeneratorService
     {
-        public Task<string> GenerateEntityAsync(string TableName, List<ColumnsDto> columns)
+        private readonly IEntityGeneratorService _entityGeneratorService;
+        public CodeGeneratorService(IEntityGeneratorService entityGeneratorService)
         {
-            string Tablename = NameHelper.Singularize(TableName);
-            string EntityBody = 
-$@"public class {Tablename}
-{{
-// Properties will be inserted here 
-}}";
-            string EntityRowTemplate = @"   public {PropertyType} {PropertyName} { get; set; }";
-            StringBuilder propertiesBuilder = new StringBuilder();
-            foreach (var column in columns)
-            {
-                string propertyType = TypeMapper.ToCSharpType(column.DataType, column.IsNullable);
-                string propertyName = NameHelper.ToPascalCase(column.ColumnName);
-                string isNullableSuffix = column.IsNullable && !propertyType.EndsWith("?") ? "?" : "";
-                string propertyRow = EntityRowTemplate.Replace("{PropertyType}", propertyType)
-                                                        .Replace("{PropertyName}", propertyName);
-                propertiesBuilder.AppendLine(propertyRow);
-            }
-            string finalEntity = EntityBody.Replace("// Properties will be inserted here", propertiesBuilder.ToString());
-            return Task.FromResult(finalEntity);
+            _entityGeneratorService = entityGeneratorService;
+        }
+        public string GenerateEntityAsync(string TableName, List<ColumnsDto> columns)
+        {
+            return _entityGeneratorService.GenerateEntityAsync(TableName, columns);
         }
 
         public string GenerateRepositoryInterfaceAsync(string tablename)
