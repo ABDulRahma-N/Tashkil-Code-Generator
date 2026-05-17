@@ -14,5 +14,12 @@ namespace Tashkil.Application.Helpers
         {
             return tableName.Singularize();
         }
+        public static string ToPascalCase(string columnName)
+        {
+            return string.Concat(
+                columnName.Split('_')
+                          .Select(w => char.ToUpper(w[0]) + w.Substring(1).ToLower())
+            );
+        }
     }
 }

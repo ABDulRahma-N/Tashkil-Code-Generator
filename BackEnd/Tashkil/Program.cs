@@ -12,6 +12,9 @@ var connectionString = builder.Configuration.GetConnectionString("DefaultConnect
 builder.Services.AddScoped<ISchemaReader>(provider => new SchemaReader(connectionString));
 builder.Services.AddScoped<ISchemaService, SchemaService>();
 
+builder.Services.AddScoped<ICodeGeneratorService, CodeGeneratorService>();
+
+
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
