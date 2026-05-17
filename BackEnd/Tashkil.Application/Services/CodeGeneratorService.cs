@@ -39,14 +39,14 @@ $@"public class {Tablename}
         {
             string Tablename = NameHelper.Singularize(tablename);
             string body = 
-@$"public interface I{Tablename}Repository
-{{ 
-    Task<{Tablename}> GetByIdAsync(int Id);
-    Task<List<{Tablename}>> GetAllAsync();
-    Task<int> CreateAsync({Tablename}  {Tablename.ToLower()});
-    Task<bool> UpdateAsync({Tablename} {Tablename.ToLower()});
-    Task<bool> DeleteAsync(int Id);
-}}";
+                @$"public interface I{Tablename}Repository
+                {{ 
+                    Task<{Tablename}> GetByIdAsync(int Id);
+                    Task<List<{Tablename}>> GetAllAsync();
+                    Task<int> CreateAsync({Tablename} {Tablename.ToLower()});
+                    Task<bool> UpdateAsync({Tablename} {Tablename.ToLower()});
+                    Task<bool> DeleteAsync(int Id);
+                }}";
             return body;
 
         }

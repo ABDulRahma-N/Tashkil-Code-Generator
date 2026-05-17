@@ -35,5 +35,24 @@ namespace Tashkil.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError, "An error occurred while generating the entity.");
             }
         }
+        [HttpPost("GenerateRepositoryInterface")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> GenerateRepositoryInterface(string TableName)
+        {
+            if (string.IsNullOrEmpty(TableName))
+                return BadRequest("TableName are required.");
+
+            try
+            {
+                var result = _codeGeneratorService.GenerateRepositoryInterfaceAsync(TableName);
+                return Ok(result);
+            }
+            catch (Exception)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, "An error occurred while generating the entity.");
+            }
+        }
     }
 }
