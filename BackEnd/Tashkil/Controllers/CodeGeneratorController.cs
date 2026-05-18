@@ -27,7 +27,7 @@ namespace Tashkil.Controllers
             }
             try
             {
-                var result = await _codeGeneratorService.GenerateEntityAsync(createEntity.TableName, createEntity.Columns);
+                var result = _codeGeneratorService.GenerateEntityAsync(createEntity.TableName, createEntity.Columns);
                 return Ok(result);
             }
             catch (Exception)
@@ -46,13 +46,36 @@ namespace Tashkil.Controllers
 
             try
             {
-                var result = _codeGeneratorService.GenerateRepositoryInterfaceAsync(TableName);
+                var result = _codeGeneratorService.GenerateRepositoryInterface(TableName);
                 return Ok(result);
             }
             catch (Exception)
             {
                 return StatusCode(StatusCodes.Status500InternalServerError, "An error occurred while generating the entity.");
             }
+        }
+        [HttpPost("GenerateRepositoryImplementation")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> GenerateRepositoryImplementation([FromBody] CreateRepositoryDto createRepository)
+        {
+            if (string.IsNullOrEmpty(createRepository.TableName) || createRepository.Columns == null || !createRepository.Columns.Any())
+            {
+                return BadRequest("TableName and columns are required.");
+            }
+            try
+            {
+                var result = _codeGeneratorService.GenerateRepositoryImplementation(createRepository.TableName, createRepository.Columns);
+                return Ok(result);
+            }
+            catch (Exception)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, "An error occurred while generating the entity.");
+            }
+
+
+
         }
     }
 }

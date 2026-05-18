@@ -9,7 +9,7 @@ namespace Tashkil.Domain.Entities
     public class Columns
     {
         public string ColumnName { get; set; }
-        public string DataType { get; set; }
+        public string SqlDataType { get; set; }
         public bool IsNullable { get; set; }
     }
 }

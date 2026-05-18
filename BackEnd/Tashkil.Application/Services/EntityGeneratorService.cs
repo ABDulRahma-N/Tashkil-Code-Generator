@@ -23,7 +23,7 @@ $@"public class {Tablename}
             StringBuilder propertiesBuilder = new StringBuilder();
             foreach (var column in columns)
             {
-                string propertyType = TypeMapper.ToCSharpType(column.DataType, column.IsNullable);
+                string propertyType = TypeMapper.ToCSharpType(column.SqlDataType, column.IsNullable);
                 string propertyName = NameHelper.ToPascalCase(column.ColumnName);
                 string isNullableSuffix = column.IsNullable && !propertyType.EndsWith("?") ? "?" : "";
                 string propertyRow = EntityRowTemplate.Replace("{PropertyType}", propertyType)

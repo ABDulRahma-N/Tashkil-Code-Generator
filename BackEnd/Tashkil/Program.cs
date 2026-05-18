@@ -14,6 +14,10 @@ builder.Services.AddScoped<ISchemaService, SchemaService>();
 
 builder.Services.AddScoped<ICodeGeneratorService, CodeGeneratorService>();
 
+builder.Services.AddScoped<IEntityGeneratorService, EntityGeneratorService>();
+
+builder.Services.AddScoped<IRepositoryGeneratorService, RepositoryGeneratorService>();
+
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

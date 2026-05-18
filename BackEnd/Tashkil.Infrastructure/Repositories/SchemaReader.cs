@@ -32,7 +32,7 @@ namespace Tashkil.Infrastructure.Repositories
 
             string query = $@"SELECT 
     COLUMN_NAME AS [columnName], 
-    DATA_TYPE AS [dataType], 
+    DATA_TYPE AS [SqlDataType], 
     CASE WHEN IS_NULLABLE = 'YES' THEN 1 ELSE 0 END AS [isNullable] 
 FROM {safeDatabaseName}.INFORMATION_SCHEMA.COLUMNS 
 WHERE TABLE_NAME = @tableName";

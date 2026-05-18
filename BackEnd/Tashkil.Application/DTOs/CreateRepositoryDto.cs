@@ -6,10 +6,9 @@ using System.Threading.Tasks;
 
 namespace Tashkil.Application.DTOs
 {
-    public class ColumnsDto
+    public class CreateRepositoryDto
     {
-        public string ColumnName { get; set; }
-        public string SqlDataType { get; set; }
-        public bool IsNullable { get; set; }
+        public string TableName { get; set; }
+        public List<ColumnsDto> Columns { get; set; }
     }
 }
