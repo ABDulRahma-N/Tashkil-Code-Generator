@@ -11,7 +11,7 @@ export function ColumnSelectionPanel() {
           Select All
         </Label>
       </div>
-      <div className="flex flex-col gap-4 border rounded mt-2 p-3 bg-muted/40">
+      <div className="flex flex-col gap-4 border rounded-md mt-2 p-3 bg-muted/40">
         <Field orientation="horizontal">
           <Checkbox id="terms-checkbox" name="terms-checkbox" />
           <Label htmlFor="terms-checkbox">Id </Label>
