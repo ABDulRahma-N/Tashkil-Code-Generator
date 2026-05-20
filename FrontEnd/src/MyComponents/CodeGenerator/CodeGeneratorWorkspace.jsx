@@ -1,4 +1,5 @@
 import { CodeGeneratorSidebar } from "./CodeGeneratorSidebar";
+import { CodePreviewPanel } from "./CodePreviewPanel";
 
 export function CodeGeneratorWorkspace() {
   return (
@@ -6,7 +7,9 @@ export function CodeGeneratorWorkspace() {
       <div className="col-span-1">
         <CodeGeneratorSidebar></CodeGeneratorSidebar>
       </div>
-      <div className="bg-green-100 col-span-2">Preview Panel</div>
+      <div className="col-span-2">
+        <CodePreviewPanel></CodePreviewPanel>
+      </div>
     </div>
   );
 }
