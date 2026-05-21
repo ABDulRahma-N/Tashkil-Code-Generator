@@ -28,7 +28,7 @@ export function CodeGeneratorSidebar() {
         selectedTable={selectedTable}
         setSelectedTable={setSelectedTable}
       ></TableSelector>
-      <ColumnSelectionPanel></ColumnSelectionPanel>
+      <ColumnSelectionPanel columns={columns}></ColumnSelectionPanel>
       <LayerSelectionPanel></LayerSelectionPanel>
       <div className="flex flex-cole justify-between">
         <Button variant="outline">Reset</Button>
