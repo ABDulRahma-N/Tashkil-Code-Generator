@@ -8,19 +8,18 @@ import {
 } from "@/components/ui/combobox";
 import { Label } from "@/components/ui/label";
 
-export function DatabaseSelector() {
-  const frameworks = ["Next.js", "SvelteKit", "Nuxt.js", "Remix", "Astro"];
+export function DatabaseSelector({ databases }) {
   return (
     <div className="flex flex-col gap-2">
       <Label htmlFor="frameworks">Database</Label>
-      <Combobox items={frameworks}>
+      <Combobox items={databases} onSelect={(value) => console.log(value)}>
         <ComboboxInput placeholder="Select a framework" />
         <ComboboxContent>
           <ComboboxEmpty>No items found.</ComboboxEmpty>
           <ComboboxList>
             {(item) => (
-              <ComboboxItem key={item} value={item}>
-                {item}
+              <ComboboxItem key={item.databaseName} value={item.databaseName}>
+                {item.databaseName}
               </ComboboxItem>
             )}
           </ComboboxList>

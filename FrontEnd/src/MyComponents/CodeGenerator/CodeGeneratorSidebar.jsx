@@ -4,10 +4,10 @@ import { DatabaseSelector } from "./CodeSidebar/DatabaseSelector";
 import { LayerSelectionPanel } from "./CodeSidebar/LayerSelectionPanel";
 import { TableSelector } from "./CodeSidebar/TableSelector";
 
-export function CodeGeneratorSidebar() {
+export function CodeGeneratorSidebar({ databases }) {
   return (
     <div className="flex flex-col gap-5 p-2">
-      <DatabaseSelector></DatabaseSelector>
+      <DatabaseSelector databases={databases}></DatabaseSelector>
       <TableSelector></TableSelector>
       <ColumnSelectionPanel></ColumnSelectionPanel>
       <LayerSelectionPanel></LayerSelectionPanel>
