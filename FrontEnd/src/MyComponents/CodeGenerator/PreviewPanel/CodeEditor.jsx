@@ -1,6 +1,8 @@
-import { useCallback } from "react";
+import { useCallback, useState } from "react";
 import Editor from "@monaco-editor/react";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Copy } from "lucide-react";
 
 export function CodeEditor({
   code,
@@ -10,6 +12,7 @@ export function CodeEditor({
   readOnly = false,
   onChange,
 }) {
+  const [codeValue, setCodeValue] = useState(code);
   const defineTheme = useCallback((monaco) => {
     monaco.editor.defineTheme("vivid-night", {
       base: "vs-dark",
@@ -58,12 +61,12 @@ export function CodeEditor({
   }, []);
 
   return (
-    <div className="w-full overflow-hidden rounded-xl border border-slate-800/50 bg-[#080d14] shadow-2xl shadow-black/70">
-      <div className="flex items-center justify-between border-b border-slate-800/50 bg-[#060a10] px-4 py-2.5">
+    <div className="w-full overflow-hidden rounded-xl border border-slate-800/50 bg-[#080d14]">
+      <div className="flex items-center justify-between border-b border-slate-800/50 bg-[#060a10] relative px-4 py-2.5">
         <div className="flex items-center gap-1.5">
-          <span className="size-3 rounded-full bg-[#ff5f57] shadow-[0_0_8px_#ff5f57]" />
-          <span className="size-3 rounded-full bg-[#ffbd2e] shadow-[0_0_8px_#ffbd2e]" />
-          <span className="size-3 rounded-full bg-[#28c840] shadow-[0_0_8px_#28c840]" />
+          <span className="size-3 rounded-full bg-[#ff5f57] " />
+          <span className="size-3 rounded-full bg-[#ffbd2e] " />
+          <span className="size-3 rounded-full bg-[#28c840] " />
         </div>
         <span className="font-mono text-xs font-medium text-slate-500">
           {fileName}
@@ -74,6 +77,16 @@ export function CodeEditor({
         >
           {language}
         </Badge>
+        <div className=" absolute right-2 top-13 z-4">
+          <Button
+            onClick={() => navigator.clipboard.writeText(codeValue)}
+            variant="ghost"
+            className="text-slate-200 hover:text-slate-900"
+            size="icon"
+          >
+            <Copy />
+          </Button>
+        </div>
       </div>
 
       <div style={{ height }}>
@@ -82,10 +95,14 @@ export function CodeEditor({
           language={language}
           theme="vivid-night"
           value={
-            code ?? "// Select a table and click Generate to preview code here."
+            codeValue ??
+            "// Select a table and click Generate to preview code here."
           }
           beforeMount={defineTheme}
-          onChange={onChange}
+          onChange={(value) => {
+            setCodeValue(value);
+            onChange && onChange(value);
+          }}
           loading={
             <div className="flex h-full items-center justify-center bg-[#080d14] font-mono text-sm text-slate-600">
               Loading…
