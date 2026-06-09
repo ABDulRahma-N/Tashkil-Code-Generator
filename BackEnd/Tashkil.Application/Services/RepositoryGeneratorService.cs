@@ -33,7 +33,7 @@ namespace Tashkil.Application.Services
     Task<bool> DeleteAsync(int Id);
 }}";
 
-         
+
             return body;
         }
         public string GenerateRepositoryImplementation(string tablename, List<ColumnsDto> columns)
@@ -41,13 +41,14 @@ namespace Tashkil.Application.Services
             string Tablename = NameHelper.Singularize(tablename);
             string CreateMethod = CreateFunaction(tablename, columns);
             string GetByIdMethod = GetByIdFunction(tablename, columns);
+            string GetAllMethod = GetAllFunction(tablename, columns);
 
             string body =
 @$"public class {Tablename}Repository : I{Tablename}Repository
 {{ 
     {CreateMethod}
-
     {GetByIdMethod}
+    {GetAllMethod}
 }}";
             return body;
 
@@ -98,11 +99,8 @@ namespace Tashkil.Application.Services
             return CreateMethodSignature;
 
         }
-
         public string GetByIdFunction(string tablename, List<ColumnsDto> columns)
         {
-
-
             string connection = "using var connection = new SqlConnection(_connectionString);";
             string PrimaryKeyColumn = columns.FirstOrDefault(x => x.IsPrimaryKey == true)?.ColumnName ?? "Id";
 
@@ -117,7 +115,7 @@ namespace Tashkil.Application.Services
             Console.WriteLine("QuerySection from get function");
             Console.WriteLine(QuerySection);
 
-           
+
             string ParametersSection = $@"var parameters = new {{ {PrimaryKeyColumn} = Id }};";
             Console.WriteLine("ParametersSection from get function");
             Console.WriteLine(ParametersSection);
@@ -135,7 +133,34 @@ namespace Tashkil.Application.Services
     }}";
 
             return GetByIdMethodSignature;
+        }
+        public string GetAllFunction(string tablename, List<ColumnsDto> columns)
+        {
+            string connection = "using var connection = new SqlConnection(_connectionString);";
+            string QueryBuilder = $"Select ";
+            foreach (var column in columns)
+            {
+                QueryBuilder += $"{column.ColumnName},";
+            }
+            QueryBuilder = QueryBuilder.TrimEnd(',') + " FROM " + tablename;
+            string QuerySection = $"string query = @\"{QueryBuilder}\";";
+            Console.WriteLine("QuerySection from get all function");
+            Console.WriteLine(QuerySection);
 
+            string QueryExecutionAndReturn = $"return await connection.QueryAsync<{NameHelper.Singularize(tablename)}>(query)).ToList();";
+
+            Console.WriteLine("QueryExecutionAndReturn from get all function");
+            Console.WriteLine(QueryExecutionAndReturn);
+
+            string GetAllMethodSignature = $@"public {MethodSignature("GetAll", true, true)}()
+    {{
+            {connection}
+            {QuerySection}
+            {QueryExecutionAndReturn}
+    }}";
+
+
+            return GetAllMethodSignature;
         }
     }
 }
