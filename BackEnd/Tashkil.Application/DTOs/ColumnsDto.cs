@@ -11,5 +11,7 @@ namespace Tashkil.Application.DTOs
         public string ColumnName { get; set; }
         public string SqlDataType { get; set; }
         public bool IsNullable { get; set; }
+        public bool IsPrimaryKey { get; set; }
+        public bool IsForeignKey { get; set; }
     }
 }

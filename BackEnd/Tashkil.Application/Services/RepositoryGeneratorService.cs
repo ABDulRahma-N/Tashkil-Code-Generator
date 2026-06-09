@@ -12,12 +12,12 @@ namespace Tashkil.Application.Services
 {
     public class RepositoryGeneratorService : IRepositoryGeneratorService
     {
-        public string MethodSignature(string tablename, string MethodName, bool isAsync, bool isAwait)
+        public string MethodSignature(string MethodName, bool isAsync, bool isAwait)
         {
             string AsyncSuffix = isAsync ? "Async" : "";
             string AwaitPrefix = isAwait ? "async " : "";
 
-            string Method = $"{AwaitPrefix}Task<int> {MethodName}{AsyncSuffix}({tablename} {tablename.ToLower()})";
+            string Method = $"{AwaitPrefix}Task<int> {MethodName}{AsyncSuffix}";
             return Method;
         }
         public string GenerateRepositoryInterface(string tablename)
@@ -28,21 +28,26 @@ namespace Tashkil.Application.Services
 {{ 
     Task<{Tablename}> GetByIdAsync(int Id);
     Task<List<{Tablename}>> GetAllAsync();
-    {MethodSignature(Tablename, "Create", true, false)};
+    {MethodSignature("Create", true, false)}({Tablename} {Tablename.ToLower()});
     Task<bool> UpdateAsync({Tablename} {Tablename.ToLower()});
     Task<bool> DeleteAsync(int Id);
 }}";
+
+         
             return body;
         }
         public string GenerateRepositoryImplementation(string tablename, List<ColumnsDto> columns)
         {
             string Tablename = NameHelper.Singularize(tablename);
             string CreateMethod = CreateFunaction(tablename, columns);
+            string GetByIdMethod = GetByIdFunction(tablename, columns);
 
             string body =
 @$"public class {Tablename}Repository : I{Tablename}Repository
 {{ 
     {CreateMethod}
+
+    {GetByIdMethod}
 }}";
             return body;
 
@@ -82,7 +87,7 @@ namespace Tashkil.Application.Services
             Console.WriteLine("QueryExecution");
             string ReturnSection = "return newId;";
 
-            string CreateMethodSignature = $@"public {MethodSignature(tablename, "Create", true, true)} 
+            string CreateMethodSignature = $@"public {MethodSignature("Create", true, true)}({tablename} {tablename.ToLower()}) 
     {{
             {connection}
             {QuerySection}
@@ -94,10 +99,42 @@ namespace Tashkil.Application.Services
 
         }
 
-        public string GetByIdFunction(string tablename)
+        public string GetByIdFunction(string tablename, List<ColumnsDto> columns)
         {
-            return "";
 
+
+            string connection = "using var connection = new SqlConnection(_connectionString);";
+            string PrimaryKeyColumn = columns.FirstOrDefault(x => x.IsPrimaryKey == true)?.ColumnName ?? "Id";
+
+            string QueryBuilder = $"Select ";
+            foreach (var column in columns)
+            {
+                QueryBuilder += $"{column.ColumnName},";
+            }
+            QueryBuilder = QueryBuilder.TrimEnd(',') + " FROM " + tablename + $" WHERE {PrimaryKeyColumn} = @Id";
+            string QuerySection = $"string query = @\"{QueryBuilder}\";";
+
+            Console.WriteLine("QuerySection from get function");
+            Console.WriteLine(QuerySection);
+
+           
+            string ParametersSection = $@"var parameters = new {{ {PrimaryKeyColumn} = Id }};";
+            Console.WriteLine("ParametersSection from get function");
+            Console.WriteLine(ParametersSection);
+
+            string QueryExecutionAndReturn = $"return await connection.QueryFirstOrDefaultAsync<{NameHelper.Singularize(tablename)}>(query, parameters);";
+            Console.WriteLine("QueryExecutionAndReturn from get function");
+            Console.WriteLine(QueryExecutionAndReturn);
+
+            string GetByIdMethodSignature = $@"public {MethodSignature("GetById", true, true)}(int Id)
+    {{
+            {connection}
+            {QuerySection}
+            {ParametersSection}
+            {QueryExecutionAndReturn}
+    }}";
+
+            return GetByIdMethodSignature;
 
         }
     }
