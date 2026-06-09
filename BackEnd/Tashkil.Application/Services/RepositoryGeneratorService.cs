@@ -38,17 +38,28 @@ namespace Tashkil.Application.Services
         }
         public string GenerateRepositoryImplementation(string tablename, List<ColumnsDto> columns)
         {
-            string Tablename = NameHelper.Singularize(tablename);
+            string Tablename = NameHelper.ToPascalCase(tablename);
             string CreateMethod = CreateFunaction(tablename, columns);
             string GetByIdMethod = GetByIdFunction(tablename, columns);
             string GetAllMethod = GetAllFunction(tablename, columns);
+            string DeleteMethod = DeleteFunction(tablename, columns);
 
             string body =
 @$"public class {Tablename}Repository : I{Tablename}Repository
 {{ 
+    private readonly string _connectionString;
+    public {Tablename}Repository(string connectionString)
+    {{
+        _connectionString = connectionString;
+    }}
+
     {CreateMethod}
+
     {GetByIdMethod}
+
     {GetAllMethod}
+
+    {DeleteMethod}
 }}";
             return body;
 
@@ -161,6 +172,37 @@ namespace Tashkil.Application.Services
 
 
             return GetAllMethodSignature;
+        }
+        public string DeleteFunction(string tablename, List<ColumnsDto> columns)
+        {
+            string connection = "using var connection = new SqlConnection(_connectionString);";
+            string PrimaryKeyColumn = columns.FirstOrDefault(x => x.IsPrimaryKey == true)?.ColumnName ?? "Id";
+
+            string QueryBuilder = $"DELETE FROM {tablename} WHERE {PrimaryKeyColumn} = @Id";
+            string QuerySection = $"string query = @\"{QueryBuilder}\";";
+
+            Console.WriteLine("QuerySection from delete function");
+            Console.WriteLine(QuerySection);
+
+            string ParametersSection = $@"var parameters = new {{ {PrimaryKeyColumn} = Id }};";
+            Console.WriteLine("ParametersSection from delete function");
+
+            Console.WriteLine(ParametersSection);
+
+            string QueryExecution = $"var affectedRows = await connection.ExecuteAsync(query, parameters);";
+            Console.WriteLine("QueryExecution from delete function");
+            Console.WriteLine(QueryExecution);
+
+            string ReturnSection = "return affectedRows > 0;";
+            string DeleteMethodSignature = $@"public {MethodSignature("Delete", true, true)}(int Id)
+    {{
+             {connection}
+            {QuerySection}
+            {ParametersSection}
+            {QueryExecution}
+            {ReturnSection}
+    }}";
+            return DeleteMethodSignature;
         }
     }
 }
