@@ -12,12 +12,12 @@ namespace Tashkil.Application.Services
 {
     public class RepositoryGeneratorService : IRepositoryGeneratorService
     {
-        public string CreateMethodSignature(string tablename,bool isAsync,bool isAwait)
+        public string MethodSignature(string tablename, string MethodName, bool isAsync, bool isAwait)
         {
             string AsyncSuffix = isAsync ? "Async" : "";
             string AwaitPrefix = isAwait ? "async " : "";
 
-            string Method = $"{AwaitPrefix}Task<int> Create{AsyncSuffix}({tablename} {tablename.ToLower()})";
+            string Method = $"{AwaitPrefix}Task<int> {MethodName}{AsyncSuffix}({tablename} {tablename.ToLower()})";
             return Method;
         }
         public string GenerateRepositoryInterface(string tablename)
@@ -28,7 +28,7 @@ namespace Tashkil.Application.Services
 {{ 
     Task<{Tablename}> GetByIdAsync(int Id);
     Task<List<{Tablename}>> GetAllAsync();
-    {CreateMethodSignature(Tablename, true, false)};
+    {MethodSignature(Tablename, "Create", true, false)};
     Task<bool> UpdateAsync({Tablename} {Tablename.ToLower()});
     Task<bool> DeleteAsync(int Id);
 }}";
@@ -36,14 +36,20 @@ namespace Tashkil.Application.Services
         }
         public string GenerateRepositoryImplementation(string tablename, List<ColumnsDto> columns)
         {
-           return CreateFunaction(tablename, columns);
+            string Tablename = NameHelper.Singularize(tablename);
+            string CreateMethod = CreateFunaction(tablename, columns);
+
+            string body =
+@$"public class {Tablename}Repository : I{Tablename}Repository
+{{ 
+    {CreateMethod}
+}}";
+            return body;
+
         }
 
-        public string CreateFunaction(string tablename,List<ColumnsDto> columns)
+        public string CreateFunaction(string tablename, List<ColumnsDto> columns)
         {
-       
-           
-
             string connection = "using var connection = new SqlConnection(_connectionString);";
 
             string QueryBuilder = $"INSERT INTO {tablename} (";
@@ -76,21 +82,23 @@ namespace Tashkil.Application.Services
             Console.WriteLine("QueryExecution");
             string ReturnSection = "return newId;";
 
-            string MethodSignature = $@"public {CreateMethodSignature(tablename, true, true)} 
-{{
-        {connection}
-        {QuerySection}
-        {ParametersSection}
-        {QueryExecution}
-        {ReturnSection}
-}}";
-            return MethodSignature;
-
-
-
+            string CreateMethodSignature = $@"public {MethodSignature(tablename, "Create", true, true)} 
+    {{
+            {connection}
+            {QuerySection}
+            {ParametersSection}
+            {QueryExecution}
+            {ReturnSection}
+    }}";
+            return CreateMethodSignature;
 
         }
 
+        public string GetByIdFunction(string tablename)
+        {
+            return "";
 
+
+        }
     }
 }
