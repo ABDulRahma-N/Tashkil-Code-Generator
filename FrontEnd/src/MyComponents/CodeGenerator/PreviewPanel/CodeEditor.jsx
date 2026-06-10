@@ -1,4 +1,4 @@
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import Editor from "@monaco-editor/react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -13,6 +13,10 @@ export function CodeEditor({
   onChange,
 }) {
   const [codeValue, setCodeValue] = useState(code);
+  const editorRef = useRef(null);
+  const indexRef = useRef(0);
+  const intervalRef = useRef(null);
+
   const defineTheme = useCallback((monaco) => {
     monaco.editor.defineTheme("vivid-night", {
       base: "vs-dark",
@@ -60,13 +64,45 @@ export function CodeEditor({
     });
   }, []);
 
+  const startTyping = useCallback((text) => {
+    if (!editorRef.current) return;
+    clearInterval(intervalRef.current);
+    indexRef.current = 0;
+    editorRef.current.setValue("");
+
+    const BATCH = 3;
+    const LIMIT = 300;
+    const SPEED = 16;
+
+    intervalRef.current = setInterval(() => {
+      indexRef.current = Math.min(indexRef.current + BATCH, text.length);
+      editorRef.current.setValue(text.slice(0, indexRef.current));
+
+      if (indexRef.current >= LIMIT || indexRef.current >= text.length) {
+        editorRef.current.setValue(text);
+        setCodeValue(text);
+        clearInterval(intervalRef.current);
+      }
+    }, SPEED);
+  }, []);
+
+  useEffect(() => {
+    return () => clearInterval(intervalRef.current);
+  }, []);
+
+  useEffect(() => {
+    if (code && editorRef.current) {
+      startTyping(code);
+    }
+  }, [code]);
+
   return (
     <div className="w-full overflow-hidden rounded-xl border border-slate-800/50 bg-[#080d14]">
       <div className="flex items-center justify-between border-b border-slate-800/50 bg-[#060a10] relative px-4 py-2.5">
         <div className="flex items-center gap-1.5">
-          <span className="size-3 rounded-full bg-[#ff5f57] " />
-          <span className="size-3 rounded-full bg-[#ffbd2e] " />
-          <span className="size-3 rounded-full bg-[#28c840] " />
+          <span className="size-3 rounded-full bg-[#ff5f57]" />
+          <span className="size-3 rounded-full bg-[#ffbd2e]" />
+          <span className="size-3 rounded-full bg-[#28c840]" />
         </div>
         <span className="font-mono text-xs font-medium text-slate-500">
           {fileName}
@@ -77,7 +113,7 @@ export function CodeEditor({
         >
           {language}
         </Badge>
-        <div className=" absolute right-2 top-13 z-4">
+        <div className="absolute right-2 top-13 z-4">
           <Button
             onClick={() => navigator.clipboard.writeText(codeValue)}
             variant="ghost"
@@ -99,6 +135,10 @@ export function CodeEditor({
             "// Select a table and click Generate to preview code here."
           }
           beforeMount={defineTheme}
+          onMount={(editor) => {
+            editorRef.current = editor;
+            if (code) startTyping(code);
+          }}
           onChange={(value) => {
             setCodeValue(value);
             onChange && onChange(value);

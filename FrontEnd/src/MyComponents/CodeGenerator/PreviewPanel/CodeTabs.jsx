@@ -1,9 +1,9 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { CodeEditor } from "./CodeEditor";
 
-export function CodeTabs({ tableName = "User" }) {
+export function CodeTabs({ tableName = "User", entityCode = "" }) {
   return (
-    <Tabs defaultValue="account" className="w-full">
+    <Tabs defaultValue="Entity" className="w-full">
       <TabsList variant="line">
         <TabsTrigger value="Entity">{tableName}.cs</TabsTrigger>
         <TabsTrigger value="IRepository">I{tableName}Repository.cs</TabsTrigger>
@@ -11,8 +11,9 @@ export function CodeTabs({ tableName = "User" }) {
       </TabsList>
       <TabsContent value="Entity">
         <CodeEditor
+          key={entityCode.length}
           language="csharp"
-          code={`public class ${tableName}Entity {\n\n}`}
+          code={entityCode || `public class ${tableName}Entity {\n\n}`}
         />
       </TabsContent>
       <TabsContent value="IRepository">

@@ -2,7 +2,10 @@ import api from "@/lib/api";
 
 export async function generateEntity(createEntityDto) {
   try {
-    const res = await api.post("/CodeGenerator/enerateEntity", createEntityDto);
+    const res = await api.post(
+      "/CodeGenerator/GenerateEntity",
+      createEntityDto,
+    );
     return res.data;
   } catch (error) {
     console.error("Error fetching databases:", error);

@@ -68,5 +68,6 @@ export function useSchema() {
     setSelectedDatabase,
     selectedTable,
     setSelectedTable,
+    setColumns,
   };
 }

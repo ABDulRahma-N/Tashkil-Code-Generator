@@ -1,9 +1,9 @@
 import { CodeTabs } from "./PreviewPanel/CodeTabs";
 
-export function CodePreviewPanel() {
+export function CodePreviewPanel({ entityCode }) {
   return (
     <div className="flex flex-col gap-5 p-2">
-      <CodeTabs></CodeTabs>
+      <CodeTabs entityCode={entityCode}></CodeTabs>
     </div>
   );
 }
