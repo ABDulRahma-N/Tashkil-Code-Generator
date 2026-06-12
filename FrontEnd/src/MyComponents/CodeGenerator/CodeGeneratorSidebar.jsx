@@ -6,7 +6,11 @@ import { TableSelector } from "./CodeSidebar/TableSelector";
 import { useSchema } from "@/hooks/useSchema";
 import { useState } from "react";
 
-export function CodeGeneratorSidebar({ setCreateEntity }) {
+export function CodeGeneratorSidebar({
+  setCreateEntity,
+  setCreateRepositoryInterface,
+  setCreateRepositoryImplementation,
+}) {
   const {
     loading,
     databases,
@@ -48,10 +52,32 @@ export function CodeGeneratorSidebar({ setCreateEntity }) {
   const handleGenerate = () => {
     console.log("Generating code with layers:", selectedLayers);
     if (selectedTable && columns.length > 0) {
-      setCreateEntity({
-        tableName: selectedTable,
-        columns: columns,
-      });
+      if (selectedLayers.entity) {
+        console.log("Generating Entity for table:", selectedTable);
+        setCreateEntity({
+          tableName: selectedTable,
+          columns: columns,
+        });
+      }
+
+      if (selectedLayers.repositoryInterface) {
+        console.log(
+          "Generating Repository Interface for table:",
+          selectedTable,
+        );
+        setCreateRepositoryInterface(selectedTable);
+      }
+
+      if (selectedLayers.repositoryImplementation) {
+        console.log(
+          "Generating Repository Implementation for table:",
+          selectedTable,
+        );
+        setCreateRepositoryImplementation({
+          tableName: selectedTable,
+          columns: columns,
+        });
+      }
     } else {
       alert("Please select a table and at least one column to generate code.");
     }

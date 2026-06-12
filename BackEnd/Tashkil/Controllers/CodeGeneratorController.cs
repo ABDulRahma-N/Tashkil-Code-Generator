@@ -35,7 +35,7 @@ namespace Tashkil.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError, "An error occurred while generating the entity.");
             }
         }
-        [HttpPost("GenerateRepositoryInterface")]
+        [HttpPost("GenerateRepositoryInterface/{TableName}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]

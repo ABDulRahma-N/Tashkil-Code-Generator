@@ -4,6 +4,7 @@ export function CodePreviewPanel({
   entityCode,
   repositoryInterfaceCode,
   repositoryImplementationCode,
+  tableName,
 }) {
   return (
     <div className="flex flex-col gap-5 p-2">

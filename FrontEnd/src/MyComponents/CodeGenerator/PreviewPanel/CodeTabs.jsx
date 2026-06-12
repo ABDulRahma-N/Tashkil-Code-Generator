@@ -2,12 +2,17 @@ import { useState, useEffect } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { CodeEditor } from "./CodeEditor";
 
-export function CodeTabs({ tableName = "User", entityCode = "" }) {
+export function CodeTabs({
+  tableName = "User",
+  entityCode = "",
+  repositoryInterfaceCode = "",
+  repositoryImplementationCode = "",
+}) {
   const [generationId, setGenerationId] = useState(0);
 
   useEffect(() => {
     setGenerationId((prev) => prev + 1);
-  }, [entityCode]);
+  }, [entityCode, repositoryInterfaceCode, repositoryImplementationCode]);
 
   return (
     <Tabs defaultValue="Entity" className="w-full">
@@ -26,14 +31,20 @@ export function CodeTabs({ tableName = "User", entityCode = "" }) {
       <TabsContent value="IRepository">
         <CodeEditor
           language="csharp"
-          code={`public interface I${tableName}Repository {\n\n}`}
+          code={
+            repositoryInterfaceCode ||
+            `public interface I${tableName}Repository {\n\n}`
+          }
           generationId={generationId}
         />
       </TabsContent>
       <TabsContent value="Repository">
         <CodeEditor
           language="csharp"
-          code={`public class ${tableName}Repository : I${tableName}Repository {\n\n}`}
+          code={
+            repositoryImplementationCode ||
+            `public class ${tableName}Repository : I${tableName}Repository {\n\n}`
+          }
           generationId={generationId}
         />
       </TabsContent>

@@ -13,6 +13,10 @@ export async function generateEntity(createEntityDto) {
   }
 }
 export async function generateRepositoryImplementation(createRepositoryDto) {
+  console.log(
+    "Generating repository implementation with DTO:",
+    createRepositoryDto,
+  );
   try {
     const res = await api.post(
       "/CodeGenerator/GenerateRepositoryImplementation",
@@ -26,9 +30,9 @@ export async function generateRepositoryImplementation(createRepositoryDto) {
 }
 export async function generateRepositoryInterface(tableName) {
   try {
-    const res = await api.post("/CodeGenerator/GenerateRepositoryInterface", {
-      TableName: tableName,
-    });
+    const res = await api.post(
+      `/CodeGenerator/GenerateRepositoryInterface/${tableName}`,
+    );
     return res.data;
   } catch (error) {
     console.error("Error fetching databases:", error);
