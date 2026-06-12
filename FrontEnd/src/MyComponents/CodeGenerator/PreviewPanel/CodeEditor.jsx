@@ -19,7 +19,7 @@ export function CodeEditor({
   const editorRef = useRef(null);
   const indexRef = useRef(0);
   const intervalRef = useRef(null);
-  const lastAnimatedId = useRef(-1);
+  const lastAnimatedId = useRef(null);
 
   const defineTheme = useCallback((monaco) => {
     monaco.editor.defineTheme("vivid-night", {
@@ -96,16 +96,20 @@ export function CodeEditor({
 
   useEffect(() => {
     if (!code || !editorRef.current) return;
+
     if (generationId === lastAnimatedId.current) return;
+
     lastAnimatedId.current = generationId;
+
     if (animatedIds.has(generationId)) {
       editorRef.current.setValue(code);
       setCodeValue(code);
       return;
     }
+
     animatedIds.add(generationId);
     startTyping(code);
-  }, [code, generationId]);
+  }, [code, generationId, startTyping]);
 
   return (
     <div className="w-full overflow-hidden rounded-xl border border-slate-800/50 bg-[#080d14]">
@@ -148,15 +152,16 @@ export function CodeEditor({
           beforeMount={defineTheme}
           onMount={(editor) => {
             editorRef.current = editor;
-            if (code) {
-              if (animatedIds.has(generationId)) {
-                editor.setValue(code);
-                setCodeValue(code);
-              } else {
-                animatedIds.add(generationId);
-                lastAnimatedId.current = generationId;
-                startTyping(code);
-              }
+
+            if (!code) return;
+
+            if (animatedIds.has(generationId)) {
+              editor.setValue(code);
+              setCodeValue(code);
+            } else {
+              animatedIds.add(generationId);
+              lastAnimatedId.current = generationId;
+              startTyping(code);
             }
           }}
           onChange={(value) => {

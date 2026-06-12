@@ -65,7 +65,7 @@ export function CodeTabs({ allCode }) {
 
       {validCodes.map((code) => {
         const key = `${code.tableName}-${code.layer}`;
-        const generationId = generationCounters.current[key]?.id ?? 0;
+        const generationId = `${code.tableName}-${code.layer}-${generationCounters.current[key]?.id ?? 0}`;
         return (
           <TabsContent key={key} value={code.layer}>
             <CodeEditor
