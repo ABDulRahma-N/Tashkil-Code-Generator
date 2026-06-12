@@ -19,15 +19,34 @@ export function CodeGeneratorSidebar({ setCreateEntity }) {
     setColumns,
   } = useSchema();
   const [resetKey, setResetKey] = useState(0);
+  const [resetLayersKey, setResetLayersKey] = useState(0);
+  const [selectedLayers, setSelectedLayers] = useState({
+    entity: false,
+    repositoryInterface: false,
+    repositoryImplementation: false,
+    serviceInterface: false,
+    serviceImplementation: false,
+    DTOs: false,
+  });
 
   const handleReset = () => {
+    setSelectedLayers({
+      entity: false,
+      repositoryInterface: false,
+      repositoryImplementation: false,
+      serviceInterface: false,
+      serviceImplementation: false,
+      DTOs: false,
+    });
     setSelectedDatabase(null);
     setSelectedTable(null);
     setColumns([]);
     setResetKey((prev) => prev + 1);
+    setResetLayersKey((prev) => prev + 1);
   };
 
   const handleGenerate = () => {
+    console.log("Generating code with layers:", selectedLayers);
     if (selectedTable && columns.length > 0) {
       setCreateEntity({
         tableName: selectedTable,
@@ -56,7 +75,10 @@ export function CodeGeneratorSidebar({ setCreateEntity }) {
         key={`columns-${resetKey}`}
         columns={columns}
       ></ColumnSelectionPanel>
-      <LayerSelectionPanel></LayerSelectionPanel>
+      <LayerSelectionPanel
+        key={`layers-${resetLayersKey}`}
+        setSelectedLayers={setSelectedLayers}
+      />
       <div className="flex flex-cole justify-between">
         <Button variant="outline" onClick={handleReset}>
           Reset

@@ -27,7 +27,12 @@ export function CodeGeneratorWorkspace() {
         ></CodeGeneratorSidebar>
       </div>
       <div className="col-span-2">
-        <CodePreviewPanel entityCode={entityCode}></CodePreviewPanel>
+        <CodePreviewPanel
+          tableName={createEntity.tableName}
+          repositoryInterfaceCode={repositoryInterfaceCode}
+          repositoryImplementationCode={repositoryImplementationCode}
+          entityCode={entityCode}
+        ></CodePreviewPanel>
       </div>
     </div>
   );
