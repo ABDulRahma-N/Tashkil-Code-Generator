@@ -12,6 +12,11 @@ export function useCodeGenerator() {
   const [repositoryInterfaceCode, setRepositoryInterfaceCode] = useState("");
   const [loading, setLoading] = useState(false);
 
+  const resetEntityCode = () => setEntityCode("");
+  const resetRepositoryInterfaceCode = () => setRepositoryInterfaceCode("");
+  const resetRepositoryImplementationCode = () =>
+    setRepositoryImplementationCode("");
+
   const entityGeneration = async (createEntityDto) => {
     setLoading(true);
     try {
@@ -56,5 +61,8 @@ export function useCodeGenerator() {
     entityGeneration,
     repositoryImplementationGeneration,
     repositoryInterfaceGeneration,
+    resetEntityCode,
+    resetRepositoryInterfaceCode,
+    resetRepositoryImplementationCode,
   };
 }

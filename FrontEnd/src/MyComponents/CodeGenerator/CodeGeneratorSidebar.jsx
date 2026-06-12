@@ -10,6 +10,7 @@ export function CodeGeneratorSidebar({
   setCreateEntity,
   setCreateRepositoryInterface,
   setCreateRepositoryImplementation,
+  setSelectedtable,
 }) {
   const {
     loading,
@@ -33,6 +34,13 @@ export function CodeGeneratorSidebar({
     DTOs: false,
   });
 
+  const isAnyLayerSelected = Object.values(selectedLayers).some(
+    (value) => value === true,
+  );
+
+  const isGenerateDisabled =
+    !selectedTable || columns.length === 0 || !isAnyLayerSelected;
+
   const handleReset = () => {
     setSelectedLayers({
       entity: false,
@@ -49,37 +57,23 @@ export function CodeGeneratorSidebar({
     setResetLayersKey((prev) => prev + 1);
   };
 
+  const handleSelectedTableChange = (table) => {
+    setSelectedTable(table);
+    setSelectedtable(table);
+  };
   const handleGenerate = () => {
-    console.log("Generating code with layers:", selectedLayers);
     if (selectedTable && columns.length > 0) {
-      if (selectedLayers.entity) {
-        console.log("Generating Entity for table:", selectedTable);
-        setCreateEntity({
-          tableName: selectedTable,
-          columns: columns,
-        });
-      }
-
-      if (selectedLayers.repositoryInterface) {
-        console.log(
-          "Generating Repository Interface for table:",
-          selectedTable,
-        );
-        setCreateRepositoryInterface(selectedTable);
-      }
-
-      if (selectedLayers.repositoryImplementation) {
-        console.log(
-          "Generating Repository Implementation for table:",
-          selectedTable,
-        );
-        setCreateRepositoryImplementation({
-          tableName: selectedTable,
-          columns: columns,
-        });
-      }
-    } else {
-      alert("Please select a table and at least one column to generate code.");
+      setCreateEntity(
+        selectedLayers.entity ? { tableName: selectedTable, columns } : null,
+      );
+      setCreateRepositoryInterface(
+        selectedLayers.repositoryInterface ? selectedTable : null,
+      );
+      setCreateRepositoryImplementation(
+        selectedLayers.repositoryImplementation
+          ? { tableName: selectedTable, columns }
+          : null,
+      );
     }
   };
 
@@ -95,7 +89,7 @@ export function CodeGeneratorSidebar({
         key={`table-${resetKey}`}
         tables={tables}
         selectedTable={selectedTable}
-        setSelectedTable={setSelectedTable}
+        setSelectedTable={handleSelectedTableChange}
       ></TableSelector>
       <ColumnSelectionPanel
         key={`columns-${resetKey}`}
@@ -109,7 +103,9 @@ export function CodeGeneratorSidebar({
         <Button variant="outline" onClick={handleReset}>
           Reset
         </Button>
-        <Button onClick={handleGenerate}>Generate</Button>
+        <Button disabled={isGenerateDisabled} onClick={handleGenerate}>
+          Generate
+        </Button>
       </div>
     </div>
   );

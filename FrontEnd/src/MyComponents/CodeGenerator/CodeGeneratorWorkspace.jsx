@@ -11,40 +11,78 @@ export function CodeGeneratorWorkspace() {
     entityGeneration,
     repositoryImplementationGeneration,
     repositoryInterfaceGeneration,
+    resetEntityCode,
+    resetRepositoryInterfaceCode,
+    resetRepositoryImplementationCode,
   } = useCodeGenerator();
+  const [selectedTable, setSelectedTable] = useState("");
   const [createEntity, setCreateEntity] = useState({});
   const [createRepositoryInterface, setCreateRepositoryInterface] =
     useState("");
   const [createRepositoryImplementation, setCreateRepositoryImplementation] =
     useState({});
+  const [allCode, setAllCode] = useState([
+    { layer: "Entity", code: "", tableName: selectedTable },
+    { layer: "IRepository", code: "", tableName: selectedTable },
+    {
+      layer: "Repository",
+      code: "",
+      tableName: selectedTable,
+    },
+  ]);
+
   useEffect(() => {
-    if (createEntity !== null) {
+    if (createEntity?.tableName) {
       entityGeneration(createEntity);
+    } else {
+      resetEntityCode();
     }
-    if (createRepositoryInterface !== null) {
+  }, [createEntity]);
+
+  useEffect(() => {
+    if (createRepositoryInterface) {
       repositoryInterfaceGeneration(createRepositoryInterface);
+    } else {
+      resetRepositoryInterfaceCode();
     }
-    if (createRepositoryImplementation !== null) {
+  }, [createRepositoryInterface]);
+
+  useEffect(() => {
+    if (createRepositoryImplementation?.tableName) {
       repositoryImplementationGeneration(createRepositoryImplementation);
+    } else {
+      resetRepositoryImplementationCode();
     }
-  }, [createEntity, createRepositoryInterface, createRepositoryImplementation]);
+  }, [createRepositoryImplementation]);
+
+  useEffect(() => {
+    setAllCode([
+      { layer: "Entity", code: entityCode, tableName: selectedTable },
+      {
+        layer: "IRepository",
+        code: repositoryInterfaceCode,
+        tableName: selectedTable,
+      },
+      {
+        layer: "Repository",
+        code: repositoryImplementationCode,
+        tableName: selectedTable,
+      },
+    ]);
+  }, [entityCode, repositoryInterfaceCode, repositoryImplementationCode]);
 
   return (
     <div className="grid grid-cols-3 gap-2 mt-10">
       <div className="col-span-1">
         <CodeGeneratorSidebar
+          setSelectedtable={setSelectedTable}
           setCreateEntity={setCreateEntity}
           setCreateRepositoryInterface={setCreateRepositoryInterface}
           setCreateRepositoryImplementation={setCreateRepositoryImplementation}
         ></CodeGeneratorSidebar>
       </div>
       <div className="col-span-2">
-        <CodePreviewPanel
-          tableName={createEntity.tableName}
-          repositoryInterfaceCode={repositoryInterfaceCode}
-          repositoryImplementationCode={repositoryImplementationCode}
-          entityCode={entityCode}
-        ></CodePreviewPanel>
+        <CodePreviewPanel allCode={allCode}></CodePreviewPanel>
       </div>
     </div>
   );
