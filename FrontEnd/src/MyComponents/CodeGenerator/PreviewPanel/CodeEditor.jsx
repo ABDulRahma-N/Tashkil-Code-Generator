@@ -75,8 +75,8 @@ export function CodeEditor({
     editorRef.current.setValue("");
 
     const BATCH = 3;
-    const LIMIT = 300;
-    const SPEED = 16;
+    const LIMIT = 700;
+    const SPEED = 6;
 
     intervalRef.current = setInterval(() => {
       indexRef.current = Math.min(indexRef.current + BATCH, text.length);
